@@ -28,7 +28,7 @@ namespace ConsoleApp1
 
         public CustomTable<BaseEntity> GetTable(string entityTypeName)
         {
-            var entityType = Type.GetType(entityTypeName);
+            var entityType = GetDynamicType(entityTypeName);
             var getTableGenericMethod = _s_getTableMethodInfo.MakeGenericMethod(entityType);
 
             var table = getTableGenericMethod.Invoke(_dataConnection, new object[] { }) as ITable<BaseEntity>;
@@ -46,7 +46,7 @@ namespace ConsoleApp1
 
         public CustomTable<BaseEntity> CreateTable(string entityTypeName)
         {
-            var entityType = Type.GetType(entityTypeName);
+            var entityType = GetDynamicType(entityTypeName);
             var createTableGenericMethod = _s_createTableMethodInfo.MakeGenericMethod(entityType);
 
             var table = createTableGenericMethod.Invoke(
@@ -61,6 +61,12 @@ namespace ConsoleApp1
                 as ITable<BaseEntity>;
 
             return new CustomTable<BaseEntity>(_dataConnection, table);
+        }
+
+        private Type GetDynamicType(string entityTypeName)
+        {
+            // Doesn't generate assembly or emit. For now.
+            return Type.GetType(entityTypeName);
         }
     }
 }
